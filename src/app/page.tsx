@@ -6,7 +6,7 @@ export default function Home() {
   const config = {
     headers: {
       Authorization:
-        "Bearer AAAAAAAAAAAAAAAAAAAAAMWfxAEAAAAAbXebC1sXjBLa82oSCGzlMBn7oNY%3DwwKOmhthW1wv35ukrDAeKfLiuzT6UguynmRhUoezxknK3zEe8a",
+        `Bearer ${process.env.TOKEN}`,
     },
   }; 
 
