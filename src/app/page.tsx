@@ -8,7 +8,7 @@ export default  function Home() {
   const getdata = async (e:any) => {
     e.preventDefault()
     // const formData = new FormData(e.target);
-    const data = axios.get('/api');
+    const data = await axios.get('/api');
     console.log(data)
 
   }
