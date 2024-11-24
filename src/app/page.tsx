@@ -1,6 +1,5 @@
 "use client"
 import axios from "axios";
-import { FormEvent } from "react";
 export default function Home() {
 
   const config = {
@@ -11,7 +10,8 @@ export default function Home() {
   }; 
 
   
-  const getdata = async (e: FormEvent<HTMLFormElement>) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const getdata = async (e:any) => {
     e.preventDefault()
     const formData = new FormData(e.target);
     const data = axios.get(
