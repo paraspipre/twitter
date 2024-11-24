@@ -7,7 +7,7 @@ export default  function Home() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getdata = async (e:any) => {
     e.preventDefault()
-    const formData = new FormData(e.target);
+    // const formData = new FormData(e.target);
     const data = axios.get('/api');
     console.log(data)
 
