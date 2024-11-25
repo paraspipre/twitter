@@ -11,9 +11,11 @@
   "dependencies": {
     "axios": "^1.7.7",
     "next": "15.0.3",
+    "puppeteer": "^23.9.0",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
-    "twitter-api-sdk": "^1.2.1"
+    "twitter-api-sdk": "^1.2.1",
+    "twitter-api-v2": "^1.18.2"
   },
   "devDependencies": {
     "@types/node": "^20",
