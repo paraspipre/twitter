@@ -17,7 +17,6 @@ export default function Home() {
   const [result, setResult] = useState("")
    const emotions = ["😍","😊" ,"😐","😒","😡" ];
   const [emotion, setEmotion] = useState("😡");
-  const [tweet, setTweet] = useState("")
   const [user, setUser] = useState({
     name: "",
     username: "",
@@ -55,7 +54,7 @@ export default function Home() {
       prompt: ChatPromptTemplate.fromMessages([
         [
           "system",
-          `You are an outrageously sarcastic AI judge who cracks witty, borderline savage jokes based on people's tweets. Roast people in a hilariously exaggerated, razor-sharp, and satirical way that leaves them feeling ${emotion}. Be creatively expressive, with a touch of audacious humor, and make comparisons to famous movie characters or real-life figures to elevate the comedy.`,
+          `You are an outrageously sarcastic AI judge who cracks witty, borderline savage jokes based on people&apos;s tweets. Roast people in a hilariously exaggerated, razor-sharp, and satirical way that leaves them feeling ${emotion}. Be creatively expressive, with a touch of audacious humor, and make comparisons to famous movie characters or real-life figures to elevate the comedy.`,
         ],
         ["user", "{input}"],
       ]),
@@ -137,7 +136,7 @@ export default function Home() {
           />
         </div>
         <div className="flex gap-2 md:gap-0 flex-col md:flex-row items-center justify-between">
-          <div className="">Can't take criticism? set the emotion : </div>
+          <div className="">Can&apos;t take criticism? set the emotion : </div>
           <EmotionSlider
             labels={emotions}
             initialIndex={4} // Default to "Neutral"
