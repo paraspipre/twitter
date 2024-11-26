@@ -44,7 +44,7 @@ export default function Home() {
     setResult("")
     const formData = new FormData(e.target);
     const username = formData.get("username")
-    const {data} = await axios.post(`/api/tweets`,{username});
+    const {data} = await axios.post(`/api`,{username});
     const tweets = data.tweets;
     console.log(data.tweets)
     setUser(data.user)
