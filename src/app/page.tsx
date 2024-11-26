@@ -7,12 +7,11 @@ import { ChatPromptTemplate} from "@langchain/core/prompts";
 import { LLMChain } from "langchain/chains";
 import EmotionSlider from "./components/EmotionSlider";
 import Image from "next/image";
-import { Poppins, Sour_Gummy } from "next/font/google";
+import { Poppins } from "next/font/google";
 import html2canvas from "html2canvas";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "400" });
 
-const sour_Gummy = Sour_Gummy({ subsets: ["latin"]});
 
 export default function Home() {
   const [result, setResult] = useState("")
@@ -117,7 +116,7 @@ export default function Home() {
         <div>
           <Image src="/X.png" width={75} height={75} alt="logo" />
         </div>
-        <div className={`text-[2rem]   md:text-[3rem] ${sour_Gummy.className}`}>
+        <div className={`text-[2rem]   md:text-[3rem] `}>
           Roast Alert!⚠️
         </div>
       </div>
