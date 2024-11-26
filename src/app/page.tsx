@@ -92,7 +92,11 @@ export default function Home() {
 
     if (blob) {
       const url = URL.createObjectURL(blob);
-      setImageURL(url); // Save the blob URL to share on Twitter
+      // const filePath = "./path/to/image.png"; // Local file path or blob data converted to a file
+      uploadToCloudinary(url)
+        .then((url) => { setImageURL(url); console.log("Uploaded Image URL:", url)})
+        .catch((err) => console.error("Error:", err));
+      ; // Save the blob URL to share on Twitter
     }
   };
 
@@ -105,6 +109,38 @@ export default function Home() {
     )}&url=${encodeURIComponent(imageURL)}`;
     window.open(twitterURL, "_blank");
   };
+
+  const cloudinary = require("cloudinary").v2; // Import Cloudinary SDK
+
+  // Configure Cloudinary with your credentials
+  cloudinary.config({
+    cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME, // Replace with your Cloudinary cloud name
+    api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY, // Replace with your Cloudinary API key
+    api_secret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET, // Replace with your Cloudinary API secret
+  });
+
+  /**
+   * Uploads a file (blob) to Cloudinary.
+   * @param {string} filePath - The path to the file or the blob URL (e.g., from local storage or frontend).
+   */
+  async function uploadToCloudinary(filePath : string) {
+    try {
+      const result = await cloudinary.uploader.upload(filePath, {
+        use_filename: true, // Optional: Use the original file name
+        unique_filename: false, // Optional: Avoid generating random file names
+      });
+
+      console.log("Upload successful:", result);
+      return result.secure_url; // Return the public URL of the uploaded file
+    } catch (error) {
+      console.error("Upload failed:", error);
+      throw error;
+    }
+  }
+
+  // Example usage:
+  
+
 
 
   return (
