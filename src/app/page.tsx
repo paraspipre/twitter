@@ -128,32 +128,32 @@ export default function Home() {
   
   return (
     <div
-      className={`flex flex-col items-center p-10 w-full min-h-screen gap-4 bg-gray-300 text-black ${poppins.className}`}
+      className={`flex flex-col items-center pt-10 p-2 sm:p-10 w-full min-h-screen gap-4 bg-gray-300 text-black ${poppins.className}`}
     >
       <div className="flex items-center gap-10 w-70%">
         <div>
           <Image src="/X.png" width={75} height={75} alt="logo" />
         </div>
-        <div className={`text-[2rem]   md:text-[3rem] `}>Roast Alert!⚠️</div>
+        <div className={`text-[2rem]   sm:text-[3rem] `}>Roast Alert!⚠️</div>
       </div>
       <div className="text-[1rem]">
         oh you Narcisist! Always wanted to know what everyone is thinking about
         you?
       </div>
       <form
-        className="flex flex-col  justify-center border p-10 rounded-3xl w-full md:w-[600px] gap-6 bg-slate-200"
+        className="flex flex-col items-start   justify-center border p-4 sm:p-10 rounded-3xl w-full sm:w-[600px] gap-6 bg-slate-200"
         onSubmit={(e) => getdata(e)}
       >
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          <div className="text-[1rem]">Lazy! Enter you X username : </div>
+        <div className="flex flex-col gap-2 sm:flex-row items-start sm:items-center justify-between w-full">
+          <div className="text-[1rem]">X username : </div>
           <input
-            className="border rounded-xl p-2 m-4 focus:outline-none bg-slate-100"
+            className="border rounded-xl p-2 focus:outline-none bg-slate-100"
             type="text"
             name="username"
           />
         </div>
-        <div className="flex gap-2 md:gap-0 flex-col md:flex-row items-center justify-between">
-          <div className="">Can&apos;t take criticism? set the emotion : </div>
+        <div className="flex flex-col gap-2 sm:flex-row items-start sm:items-center justify-between w-full">
+          <div className="">Set emotion : </div>
           <EmotionSlider
             labels={emotions}
             initialIndex={4} // Default to "Neutral"
@@ -170,7 +170,7 @@ export default function Home() {
       {result && (
         <div
           ref={divRef}
-          className="flex flex-col  justify-center border p-6 rounded-3xl w-full md:w-[600px] gap-6 bg-purple-300"
+          className="flex flex-col  justify-center border p-6 rounded-3xl w-full sm:w-[600px] gap-6 bg-purple-300"
         >
           <div>
             <div className="border-b pb-4 mb-4 flex items-center justify-between">
@@ -192,23 +192,28 @@ export default function Home() {
                 </div>
               </div>
               <div className="flex gap-2">
-              <button
-                onClick={shareOnTwitter}
-                className="flex items-center justify-center gap-2 p-3 bg-purple-800 w-fit rounded-[12px] text-white"
-              >
-                <div> Share on </div>{" "}
-                <div className="w-[15px] h-[15px]">
-                  {" "}
-                  <Image src="/X.png" alt="logo1" width={15} height={15} />{" "}
-                </div>
-              </button>
-              <button
-                onClick={download}
-                className="flex items-center justify-center gap-2 p-3 bg-purple-800 w-fit rounded-[12px] text-white"
-              >
-                {imageURL ? <Loader/>: <ArrowDownToLine/> }
+                <button
+                  onClick={shareOnTwitter}
+                  className="flex items-center justify-center gap-2 p-3 bg-purple-800 w-fit rounded-[12px] text-white"
+                >
+                  <div> Share on </div>{" "}
+                  <div className="w-[15px] h-[15px]">
+                    {" "}
+                    <Image
+                      src="/X.png"
+                      alt="logo1"
+                      width={15}
+                      height={15}
+                    />{" "}
+                  </div>
                 </button>
-                </div>
+                <button
+                  onClick={download}
+                  className="flex items-center justify-center gap-2 p-3 bg-purple-800 w-fit rounded-[12px] text-white"
+                >
+                  {imageURL ? <Loader /> : <ArrowDownToLine />}
+                </button>
+              </div>
             </div>
 
             <div>{result}</div>
