@@ -69,7 +69,7 @@ export default function Page({ params }: { params:any }) {
 
   return (
     <div
-      className={`flex flex-col items-center p-10 w-full min-h-screen gap-4 bg-gray-300 text-black ${poppins.className}`}
+      className={`flex flex-col items-center p-2 sm:p-10 w-full min-h-screen gap-4 bg-gray-300 text-black ${poppins.className}`}
     >
       <div className="flex items-center gap-10 w-70%">
         <div>
