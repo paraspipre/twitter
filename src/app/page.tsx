@@ -9,7 +9,7 @@ import EmotionSlider from "./components/EmotionSlider";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
 import html2canvas from "html2canvas";
-import Together from "together-ai";
+import { ArrowDownToLine, Loader } from "lucide-react";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "400" });
 
@@ -17,7 +17,7 @@ const poppins = Poppins({ subsets: ["latin"], weight: "400" });
 export default function Home() {
   const [result, setResult] = useState("")
    const emotions = ["😍","😊" ,"😐","😒","😡" ];
-  const [emotion, setEmotion] = useState("😡");
+  const [emotion, setEmotion] = useState<string>("😡");
   const [user, setUser] = useState({
     name: "",
     username: "",
@@ -30,13 +30,7 @@ export default function Home() {
     setEmotion(selectedEmotion)
   };
   
-  // const llm = new HuggingFaceInference({
-  //   model: "mistralai/Mixtral-8x7B-Instruct-v0.1", //meta-llama/Llama-3.2-1B //mistralai/Mixtral-8x7B-Instruct-v0.1 //meta-llama/Meta-Llama-3-8B-Instruct
-  //   apiKey: process.env.NEXT_PUBLIC_HF_TOKEN, // In Node.js defaults to process.env.HUGGINGFACEHUB_API_KEY
-  //   // maxTokens: 1500,
-  //   // temperature: 0.8,
-  //   // topP: 0.95,
-  // });
+  
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getdata = async (e: any) => {
@@ -46,38 +40,21 @@ export default function Home() {
     const formData = new FormData(e.target);
     const username = formData.get("username")
     const {data} = await axios.post(`/api`,{username});
-    const tweets = data.tweets;
+    const tweets:string = data.tweets;
     console.log(data.tweets)
     setUser(data.user)
 
+    const response =  await axios.post("/api/ai",{tweets,emotion})
 
-    const together = new Together({
-      apiKey: process.env.TOGETHER_API_KEY,
-    });
+    setResult(response.data.airesult);
 
-    const response = await together.chat.completions.create({
-      messages: [
-        {
-          role: "system",
-          content:
-            `You are an outrageously sarcastic AI judge who cracks witty, borderline savage jokes based on people&apos;s tweets. Roast people in a hilariously exaggerated, razor-sharp, and satirical way that leaves them feeling ${emotion}. Be creatively expressive, with a touch of audacious humor, and make comparisons to famous movie characters or real-life figures to elevate the comedy.`,
-        },
-        {
-          role: "user",
-          content:tweets
-        },
-      ],
-      model: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
-      temperature: 0.7,
-      top_p: 0.7,
-      top_k: 50,
-      repetition_penalty: 1,
-      stop: ["<|eot_id|>", "<|eom_id|>"],
-      max_tokens:200
-    });
-
-    setResult(response?.choices[0]?.message?.content as string)
-
+    // const llm = new HuggingFaceInference({
+    //   model: "mistralai/Mixtral-8x7B-Instruct-v0.1", //meta-llama/Llama-3.2-1B //mistralai/Mixtral-8x7B-Instruct-v0.1 //meta-llama/Meta-Llama-3-8B-Instruct
+    //   apiKey: process.env.NEXT_PUBLIC_HF_TOKEN, // In Node.js defaults to process.env.HUGGINGFACEHUB_API_KEY
+    //   // maxTokens: 1500,
+    //   // temperature: 0.8,
+    //   // topP: 0.95,
+    // });
 
     // const chainRef = new LLMChain({
     //   llm,
@@ -99,15 +76,16 @@ export default function Home() {
     // setResult(resdata.text)
     // setResult(resdata.text.split(':')[1])
     // if(result?.length < 1) setResult("Something is went wrong try changing emotion level")
-    captureImage()
+    
     setLoading(false)
   }
 
   const divRef = useRef<HTMLDivElement>(null);
-  const [imageURL, setImageURL] = useState<string | null>(null);
+  const [imageURL, setImageURL] = useState(false);
 
-  const captureImage = async () => {
+  const download = async () => {
     if (!divRef.current) return;
+    setImageURL(true)
 
     // Use html2canvas to capture the div
     const canvas = await html2canvas(divRef.current, {
@@ -128,15 +106,21 @@ export default function Home() {
       });
       const data = await response.json();
       console.log("Uploaded URL:", data.url);
-      setImageURL(data.url)
+      setImageURL(data.url);
+      const a = document.createElement("a");
+      a.href = data.url as string;
+      const timestamp = new Date().toISOString().replace(/[-:.]/g, "_");
+      a.download = `xroast${timestamp}.png`;
+      a.click();
     }
+    setImageURL(false)
   };
 
   const shareOnTwitter = () => {
     const twitterURL = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
-      imageURL as string
+      `https://xroast.vercel.app/${user.username}` as string
     )}&text=${encodeURIComponent(
-      "Roasted by https://twitter-ten-inky.vercel.app !"
+      "Check out this cool free AI Tweet Roaster🗿🗿."
     )}`;
     window.open(twitterURL, "_blank");
   };
@@ -150,9 +134,7 @@ export default function Home() {
         <div>
           <Image src="/X.png" width={75} height={75} alt="logo" />
         </div>
-        <div className={`text-[2rem]   md:text-[3rem] `}>
-          Roast Alert!⚠️
-        </div>
+        <div className={`text-[2rem]   md:text-[3rem] `}>Roast Alert!⚠️</div>
       </div>
       <div className="text-[1rem]">
         oh you Narcisist! Always wanted to know what everyone is thinking about
@@ -182,7 +164,7 @@ export default function Home() {
           className="w-full p-2 rounded-xl bg-purple-500  flex items-center justify-center"
           type="submit"
         >
-          {loading ? "Wait" :"Click now Lazy!"}
+          {loading ? "Wait" : "Click now Lazy!"}
         </button>
       </form>
       {result && (
@@ -203,10 +185,13 @@ export default function Home() {
                   />
                 </div>
                 <div>
-                  <div className="text-purple-900 font-bold text-xl">{user.name}</div>
+                  <div className="text-purple-900 font-bold text-xl">
+                    {user.name}
+                  </div>
                   <div>{user.username}</div>
                 </div>
               </div>
+              <div className="flex gap-2">
               <button
                 onClick={shareOnTwitter}
                 className="flex items-center justify-center gap-2 p-3 bg-purple-800 w-fit rounded-[12px] text-white"
@@ -217,14 +202,19 @@ export default function Home() {
                   <Image src="/X.png" alt="logo1" width={15} height={15} />{" "}
                 </div>
               </button>
+              <button
+                onClick={download}
+                className="flex items-center justify-center gap-2 p-3 bg-purple-800 w-fit rounded-[12px] text-white"
+              >
+                {imageURL ? <Loader/>: <ArrowDownToLine/> }
+                </button>
+                </div>
             </div>
 
-            <div>
-              {result}
-            </div>
+            <div>{result}</div>
             <div className="border-t mt-4 pt-4 text-sm">
               {" "}
-              Rosted by https://twitter-ten-inky.vercel.app
+              Rosted by https://xroast.vercel.app
             </div>
             <div className="text-sm"> Made with ❤️ by @ParasPipre </div>
           </div>
