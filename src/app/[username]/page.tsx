@@ -10,8 +10,9 @@ import Link from "next/link";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "400" });
 
-export default function Page({ params }:{params:{username:string}}) {
-   const username = params.username
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function Page({ params }: { params:any }) {
+  const username = params.username;
   const [result, setResult] = useState("");
   const [user, setUser] = useState({
     name: "",
@@ -25,48 +26,46 @@ export default function Page({ params }:{params:{username:string}}) {
     const { data } = await axios.post(`/api`, { username });
     const tweets: string = data.tweets;
     console.log(data.tweets);
-     setUser(data.user);
-     
+    setUser(data.user);
 
-     const emotion = "😡"
-     
-      const response = await axios.post("/api/ai", { tweets, emotion });
-      setResult(response.data.airesult);
+    const emotion = "😡";
 
-   //   const llm = new HuggingFaceInference({
-   //     model: "mistralai/Mixtral-8x7B-Instruct-v0.1", //meta-llama/Llama-3.2-1B //mistralai/Mixtral-8x7B-Instruct-v0.1 //meta-llama/Meta-Llama-3-8B-Instruct
-   //     apiKey: process.env.NEXT_PUBLIC_HF_TOKEN, // In Node.js defaults to process.env.HUGGINGFACEHUB_API_KEY
-   //     // maxTokens: 1500,
-   //     // temperature: 0.8,
-   //     // topP: 0.95,
-   //   });
+    const response = await axios.post("/api/ai", { tweets, emotion });
+    setResult(response.data.airesult);
 
-   //  const chainRef = new LLMChain({
-   //    llm,
-   //    prompt: ChatPromptTemplate.fromMessages([
-   //      [
-   //        "system",
-   //        `You are an outrageously sarcastic AI judge who cracks witty, borderline savage jokes based on people&apos;s tweets. Roast people in a hilariously exaggerated, razor-sharp, and satirical way that leaves them feeling 😡. Be creatively expressive, with a touch of audacious humor, and make comparisons to famous movie characters or real-life figures to elevate the comedy.`,
-   //      ],
-   //      ["user", "{input}"],
-   //    ]),
-   //  });
+    //   const llm = new HuggingFaceInference({
+    //     model: "mistralai/Mixtral-8x7B-Instruct-v0.1", //meta-llama/Llama-3.2-1B //mistralai/Mixtral-8x7B-Instruct-v0.1 //meta-llama/Meta-Llama-3-8B-Instruct
+    //     apiKey: process.env.NEXT_PUBLIC_HF_TOKEN, // In Node.js defaults to process.env.HUGGINGFACEHUB_API_KEY
+    //     // maxTokens: 1500,
+    //     // temperature: 0.8,
+    //     // topP: 0.95,
+    //   });
 
-   //  const resdata = await chainRef?.invoke(
-   //    {
-   //      input: tweets,
-   //    }
-   //  );
-   //  console.log(resdata.text);
-   //  setResult(resdata.text)
+    //  const chainRef = new LLMChain({
+    //    llm,
+    //    prompt: ChatPromptTemplate.fromMessages([
+    //      [
+    //        "system",
+    //        `You are an outrageously sarcastic AI judge who cracks witty, borderline savage jokes based on people&apos;s tweets. Roast people in a hilariously exaggerated, razor-sharp, and satirical way that leaves them feeling 😡. Be creatively expressive, with a touch of audacious humor, and make comparisons to famous movie characters or real-life figures to elevate the comedy.`,
+    //      ],
+    //      ["user", "{input}"],
+    //    ]),
+    //  });
+
+    //  const resdata = await chainRef?.invoke(
+    //    {
+    //      input: tweets,
+    //    }
+    //  );
+    //  console.log(resdata.text);
+    //  setResult(resdata.text)
     // setResult(resdata.text.split(':')[1])
     // if(result?.length < 1) setResult("Something is went wrong try changing emotion level")
-    
-   },[username])
-   
-   useEffect(() => {
-     getdata();
-   }, [ getdata]);
+  }, [username]);
+
+  useEffect(() => {
+    getdata();
+  }, [getdata]);
 
   return (
     <div
@@ -104,10 +103,9 @@ export default function Page({ params }:{params:{username:string}}) {
                   <div>{user.username}</div>
                 </div>
               </div>
-                    <Link
-                       href={`/`}
+              <Link
+                href={`/`}
                 className="w-fit p-2 rounded-xl bg-purple-500  flex items-center justify-center"
-               
               >
                 Roast your tweets
               </Link>
