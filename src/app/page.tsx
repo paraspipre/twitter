@@ -1,14 +1,15 @@
 
 "use client"
 import axios from "axios";
-import { HuggingFaceInference } from "@langchain/community/llms/hf";
+// import { HuggingFaceInference } from "@langchain/community/llms/hf";
 import {  useRef, useState } from "react";
-import { ChatPromptTemplate} from "@langchain/core/prompts";
-import { LLMChain } from "langchain/chains";
+// import { ChatPromptTemplate} from "@langchain/core/prompts";
+// import { LLMChain } from "langchain/chains";
 import EmotionSlider from "./components/EmotionSlider";
 import Image from "next/image";
 import { Poppins } from "next/font/google";
 import html2canvas from "html2canvas";
+import Together from "together-ai";
 
 const poppins = Poppins({ subsets: ["latin"], weight: "400" });
 
@@ -29,13 +30,13 @@ export default function Home() {
     setEmotion(selectedEmotion)
   };
   
-  const llm = new HuggingFaceInference({
-    model: "mistralai/Mixtral-8x7B-Instruct-v0.1", //meta-llama/Llama-3.2-1B //mistralai/Mixtral-8x7B-Instruct-v0.1 //meta-llama/Meta-Llama-3-8B-Instruct
-    apiKey: process.env.NEXT_PUBLIC_HF_TOKEN, // In Node.js defaults to process.env.HUGGINGFACEHUB_API_KEY
-    // maxTokens: 1500,
-    // temperature: 0.8,
-    // topP: 0.95,
-  });
+  // const llm = new HuggingFaceInference({
+  //   model: "mistralai/Mixtral-8x7B-Instruct-v0.1", //meta-llama/Llama-3.2-1B //mistralai/Mixtral-8x7B-Instruct-v0.1 //meta-llama/Meta-Llama-3-8B-Instruct
+  //   apiKey: process.env.NEXT_PUBLIC_HF_TOKEN, // In Node.js defaults to process.env.HUGGINGFACEHUB_API_KEY
+  //   // maxTokens: 1500,
+  //   // temperature: 0.8,
+  //   // topP: 0.95,
+  // });
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const getdata = async (e: any) => {
@@ -49,24 +50,53 @@ export default function Home() {
     console.log(data.tweets)
     setUser(data.user)
 
-    const chainRef = new LLMChain({
-      llm,
-      prompt: ChatPromptTemplate.fromMessages([
-        [
-          "system",
-          `You are an outrageously sarcastic AI judge who cracks witty, borderline savage jokes based on people&apos;s tweets. Roast people in a hilariously exaggerated, razor-sharp, and satirical way that leaves them feeling ${emotion}. Be creatively expressive, with a touch of audacious humor, and make comparisons to famous movie characters or real-life figures to elevate the comedy.`,
-        ],
-        ["user", "{input}"],
-      ]),
+
+    const together = new Together({
+      apiKey: process.env.NEXT_PUBLIC_TOGETHER_API_KEY,
     });
+
+    const response = await together.chat.completions.create({
+      messages: [
+        {
+          role: "system",
+          content:
+            `You are an outrageously sarcastic AI judge who cracks witty, borderline savage jokes based on people&apos;s tweets. Roast people in a hilariously exaggerated, razor-sharp, and satirical way that leaves them feeling ${emotion}. Be creatively expressive, with a touch of audacious humor, and make comparisons to famous movie characters or real-life figures to elevate the comedy.`,
+        },
+        {
+          role: "user",
+          content:tweets
+        },
+      ],
+      model: "meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo",
+      temperature: 0.7,
+      top_p: 0.7,
+      top_k: 50,
+      repetition_penalty: 1,
+      stop: ["<|eot_id|>", "<|eom_id|>"],
+      max_tokens:200
+    });
+
+    setResult(response?.choices[0]?.message?.content as string)
+
+
+    // const chainRef = new LLMChain({
+    //   llm,
+    //   prompt: ChatPromptTemplate.fromMessages([
+    //     [
+    //       "system",
+    //       `You are an outrageously sarcastic AI judge who cracks witty, borderline savage jokes based on people&apos;s tweets. Roast people in a hilariously exaggerated, razor-sharp, and satirical way that leaves them feeling ${emotion}. Be creatively expressive, with a touch of audacious humor, and make comparisons to famous movie characters or real-life figures to elevate the comedy.`,
+    //     ],
+    //     ["user", "{input}"],
+    //   ]),
+    // });
     
-    const resdata = await chainRef?.invoke(
-      {
-        input: tweets,
-      }
-    );
-    console.log(resdata.text);
-    setResult(resdata.text)
+    // const resdata = await chainRef?.invoke(
+    //   {
+    //     input: tweets,
+    //   }
+    // );
+    // console.log(resdata.text);
+    // setResult(resdata.text)
     // setResult(resdata.text.split(':')[1])
     // if(result?.length < 1) setResult("Something is went wrong try changing emotion level")
     captureImage()
@@ -91,58 +121,27 @@ export default function Home() {
     );
 
     if (blob) {
-      const url = URL.createObjectURL(blob);
-      // const filePath = "./path/to/image.png"; // Local file path or blob data converted to a file
-      uploadToCloudinary(url)
-        .then((url) => { setImageURL(url); console.log("Uploaded Image URL:", url)})
-        .catch((err) => console.error("Error:", err));
-      ; // Save the blob URL to share on Twitter
+      const response = await fetch("/api/image", {
+        method: "POST",
+        headers: { "Content-Type": "application/octet-stream" }, // Specify the content type
+        body: blob, // Send the blob as the request body
+      });
+      const data = await response.json();
+      console.log("Uploaded URL:", data.url);
+      setImageURL(data.url)
     }
   };
 
   const shareOnTwitter = () => {
-    captureImage();
-    if (!imageURL) return;
-
-    const twitterURL = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    const twitterURL = `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+      imageURL as string
+    )}&text=${encodeURIComponent(
       "Roasted by https://twitter-ten-inky.vercel.app !"
-    )}&url=${encodeURIComponent(imageURL)}`;
+    )}`;
     window.open(twitterURL, "_blank");
   };
 
-  const cloudinary = require("cloudinary").v2; // Import Cloudinary SDK
-
-  // Configure Cloudinary with your credentials
-  cloudinary.config({
-    cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME, // Replace with your Cloudinary cloud name
-    api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY, // Replace with your Cloudinary API key
-    api_secret: process.env.NEXT_PUBLIC_CLOUDINARY_API_SECRET, // Replace with your Cloudinary API secret
-  });
-
-  /**
-   * Uploads a file (blob) to Cloudinary.
-   * @param {string} filePath - The path to the file or the blob URL (e.g., from local storage or frontend).
-   */
-  async function uploadToCloudinary(filePath : string) {
-    try {
-      const result = await cloudinary.uploader.upload(filePath, {
-        use_filename: true, // Optional: Use the original file name
-        unique_filename: false, // Optional: Avoid generating random file names
-      });
-
-      console.log("Upload successful:", result);
-      return result.secure_url; // Return the public URL of the uploaded file
-    } catch (error) {
-      console.error("Upload failed:", error);
-      throw error;
-    }
-  }
-
-  // Example usage:
   
-
-
-
   return (
     <div
       className={`flex flex-col items-center p-10 w-full min-h-screen gap-4 bg-gray-300 text-black ${poppins.className}`}
@@ -164,7 +163,7 @@ export default function Home() {
         onSubmit={(e) => getdata(e)}
       >
         <div className="flex flex-col md:flex-row items-center justify-between">
-          <div className="text-[1rem]">Lazy Ass! Enter you X username : </div>
+          <div className="text-[1rem]">Lazy! Enter you X username : </div>
           <input
             className="border rounded-xl p-2 m-4 focus:outline-none bg-slate-100"
             type="text"
