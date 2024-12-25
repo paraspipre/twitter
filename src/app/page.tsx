@@ -134,7 +134,7 @@ export default function Home() {
         <div>
           <Image src="/X.png" width={75} height={75} alt="logo" />
         </div>
-        <div className={`text-[2rem]   sm:text-[3rem] `}>Roast Alert!⚠️</div>
+        <div className={`text-[2rem]   sm:text-[3rem] `}>Roast!⚠️</div>
       </div>
       <div className="text-[1rem]">
         oh you Narcisist! Always wanted to know what everyone is thinking about
